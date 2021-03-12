@@ -34,6 +34,28 @@ const Dashboard = ({ navigation }) => {
 			console.error(error);
 		}
 	}
+	const completeTask = async (id, content, isComplete) => {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+		var urlencoded = new URLSearchParams();
+		urlencoded.append("content", content);
+		urlencoded.append("isComplete", isComplete ? "false" : "true");
+
+		var requestOptions = {
+			method: 'PUT',
+			headers: myHeaders,
+			body: urlencoded,
+			redirect: 'follow'
+		};
+		try {
+			await fetch(
+				`http://localhost:4242/api/task/${id}`, requestOptions
+			);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 	getTask()
 
 
@@ -42,9 +64,13 @@ const Dashboard = ({ navigation }) => {
 			<Header>Today's Task</Header>
 			<View style={styles.items}>
 				{
-					tasks.map(task => {
+					tasks.map((task, index) => {
 						return (
-							<Task text={task.content} />
+							<TouchableOpacity key={index} onPress={() => completeTask(task.id, task.content, task.isComplete)}>
+
+								<Task text={task.content} isComplete={task.isComplete} />
+							</TouchableOpacity>
+
 						)
 					})
 				}
